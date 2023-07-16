@@ -1,3 +1,4 @@
+import styled from '@emotion/styled';
 import EmotionRegistry from './registory';
 
 export default function RootLayout({
@@ -8,7 +9,7 @@ export default function RootLayout({
   return (
     <html>
       <head />
-      <body>
+      <body style={{ margin: '0px' }}>
         <EmotionRegistry>{children}</EmotionRegistry>
       </body>
     </html>

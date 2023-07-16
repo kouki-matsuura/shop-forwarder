@@ -1,10 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { FC } from 'react';
 import { Button } from '@mui/material';
 
-const MuiButton = ({ children }: { children: React.ReactNode }) => (
-  <Button color="inherit">{children}</Button>
+type MuiButtonProps = {
+  onClick: () => void;
+  children: React.ReactNode;
+};
+const MuiButton: FC<MuiButtonProps> = ({ onClick, children }) => (
+  <Button color="inherit" onClick={onClick}>
+    {children}
+  </Button>
 );
 
 export default MuiButton;

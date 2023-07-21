@@ -4,12 +4,11 @@ type UseTextSearchResponse = {
 };
 export const useTextSearch = (): UseTextSearchResponse => {
   const getInfos = async (req: PlacesRequest) => {
-    const url = `
-    https://maps.googleapis.com/maps/api/place/textsearch/json?query=${req.query}
-    &language=${req.language}&location=${req.location}&radius=${req.radius}&key=${req.key}`;
-
-    const response = await fetch(url);
+    const response = await fetch(
+      `/api/textSearch?query=${req.query}&language=${req.language}&location=${req.location}&radius=${req.radius}&key=${req.key}`,
+    );
     const result = await response.json();
+    console.log(result);
     return result;
   };
 

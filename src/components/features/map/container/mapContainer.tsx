@@ -2,8 +2,7 @@
 import { useEffect, useState } from 'react';
 import MapPresenter from '../presenter/mapPresenter';
 import { useTextSearch } from '../hooks/useTextSearch';
-
-// APIについて：https://stackoverflow.com/questions/66944396/can-i-use-google-places-with-react-google-maps-api
+import googleMapReact from 'google-map-react';
 
 export const MapContainer = () => {
   const [defaultLatLng, setDefaultLatLng] = useState({
@@ -35,7 +34,6 @@ export const MapContainer = () => {
       location: location,
       radius: radius,
     });
-    console.log(response);
     setInfos(response);
   };
 

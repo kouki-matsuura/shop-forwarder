@@ -52,6 +52,7 @@ const MapPresenter: React.FC<MapPresenterProps> = ({
           defaultZoom={16}
           onGoogleApiLoaded={handleApiLoaded}
           onClick={setLatLng}
+          yesIWantToUseGoogleMapApiInternals
         />
       </div>
 

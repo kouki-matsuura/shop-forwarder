@@ -30,7 +30,7 @@ export const MapContainer = () => {
 
   const [infos, setInfos] = useState<any>();
 
-  const { getPlaces, getLatLng, getAddress } = useTextSearch();
+  const { address, getPlaces, getLatLng, getAddress } = useTextSearch();
 
   const handleApiLoaded = ({ map, maps }: { map: any; maps: any }) => {
     new maps.Marker({
@@ -52,13 +52,14 @@ export const MapContainer = () => {
   };
 
   useEffect(() => {
-    const response = getAddress({
+    getAddress({
       key: process.env.NEXT_PUBLIC_MAP_API_KEY || '',
       lat: latLng.lat,
       lng: latLng.lng,
     });
-    console.log('geocode,response:', response);
-  }, [getAddress, latLng]);
+    console.log('latlng:', latLng);
+    console.log('address:', address);
+  }, [latLng]);
 
   const args = {
     latLng,

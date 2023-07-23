@@ -5,11 +5,13 @@ import {
   ReverseGeoCodeRequest,
 } from '../map.types';
 type UseTextSearchResponse = {
+  address: string;
   getPlaces: (req: PlacesRequest) => any;
   getLatLng: (req: GeoCodeRequest) => any;
-  getAddress: (req: ReverseGeoCodeRequest) => any;
+  getAddress: (req: ReverseGeoCodeRequest) => void;
 };
 export const useTextSearch = (): UseTextSearchResponse => {
+  const [address, setAddress] = useState<string>('');
   const getPlaces = async (req: PlacesRequest) => {
     const response = await fetch(
       `/api/textSearch?query=${req.query}&language=ja&location=${req.location}&radius=${req.radius}&minprice=${req.minprice}&maxprice=${req.maxprice}&key=${req.key}`,
@@ -34,11 +36,11 @@ export const useTextSearch = (): UseTextSearchResponse => {
       `/api/reverseGeoCoder?latlng=${latlng}&key=${req.key}`,
     );
     const result = await response.json();
-    console.log('ADDRESS:', result.results[0]);
-    return result.results[0];
+    setAddress(result.results[0]);
   };
 
   return {
+    address,
     getPlaces,
     getLatLng,
     getAddress,

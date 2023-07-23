@@ -1,8 +1,6 @@
 export type PlacesRequest = {
   // APIキー
   key: string;
-  // 言語
-  language: string;
   // 検索ワード
   query: string;
   // 緯度と経度
@@ -13,4 +11,20 @@ export type PlacesRequest = {
   minprice?: number;
   // 最高価格レベル
   maxprice?: number;
+};
+
+export type GeoCodeRequest = {
+  //APIキー
+  key: string;
+  //地点名
+  address: string;
+};
+
+export type ReverseGeoCodeRequest = {
+  //APIキー
+  key: string;
+  //緯度
+  lat: number;
+  //経度
+  lng: number;
 };

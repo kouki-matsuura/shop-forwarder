@@ -4,45 +4,67 @@ import MapPresenter from '../presenter/mapPresenter';
 import { useTextSearch } from '../hooks/useTextSearch';
 import googleMapReact from 'google-map-react';
 
+/*
+TODO:
+1. useStateをまとめる
+2. 一つのハンドラーでstateを更新する
+
+3. 検索の中心となる緯度・経度はAPIから取得　＝＞　「新宿駅」などから緯度経度を取得
+4. 地図から地点を検索
+*/
+
 export const MapContainer = () => {
-  const [defaultLatLng, setDefaultLatLng] = useState({
+  const [latLng, setLatLng] = useState({
     lat: 35.6905,
     lng: 139.6995,
   });
-  const [keyword, setKeyword] = useState('レストラン');
-  const [language, setLanguage] = useState('ja');
-  const [location, setLocation] = useState(
-    `${defaultLatLng.lat},${defaultLatLng.lng}`,
-  );
-  const [radius, setRadius] = useState(100);
+
+  const [searchForm, setSearchForm] = useState({
+    address: '',
+    keyword: '',
+    location: '',
+    radius: 100,
+    minPrice: 1,
+    maxPrice: 4,
+  });
+
   const [infos, setInfos] = useState<any>();
 
-  const { getInfos } = useTextSearch();
+  const { getPlaces, getLatLng, getAddress } = useTextSearch();
 
   const handleApiLoaded = ({ map, maps }: { map: any; maps: any }) => {
     new maps.Marker({
       map,
-      position: defaultLatLng,
+      position: latLng,
     });
   };
 
   const handleGetInfos = async () => {
-    const response = await getInfos({
+    const response = getPlaces({
       key: process.env.NEXT_PUBLIC_MAP_API_KEY || '',
-      language: language,
-      query: keyword,
-      location: location,
-      radius: radius,
+      query: searchForm.keyword,
+      location: searchForm.location,
+      radius: searchForm.radius,
+      minprice: searchForm.minPrice,
+      maxprice: searchForm.maxPrice,
     });
     setInfos(response);
   };
 
   useEffect(() => {
-    handleGetInfos();
-  }, []);
+    const response = getAddress({
+      key: process.env.NEXT_PUBLIC_MAP_API_KEY || '',
+      lat: latLng.lat,
+      lng: latLng.lng,
+    });
+    console.log('geocode,response:', response);
+  }, [getAddress, latLng]);
 
   const args = {
-    defaultLatLng,
+    latLng,
+    setLatLng,
+    searchForm,
+    setSearchForm,
     handleApiLoaded,
     handleGetInfos,
   };

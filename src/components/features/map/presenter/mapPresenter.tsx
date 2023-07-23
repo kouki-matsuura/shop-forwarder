@@ -1,30 +1,61 @@
 'use client';
 import MuiButton from '@/components/ui/MuiButton';
+import MuiTextField from '@/components/ui/MuiInputText';
 import GoogleMapReact from 'google-map-react';
+import { Dispatch, SetStateAction } from 'react';
 type MapPresenterProps = {
-  defaultLatLng: {
+  latLng: {
     lat: number;
     lng: number;
   };
+  setLatLng: Dispatch<
+    SetStateAction<{
+      lat: number;
+      lng: number;
+    }>
+  >;
+  searchForm: {
+    address: string;
+    keyword: string;
+    location: string;
+    radius: number;
+    minPrice: number;
+    maxPrice: number;
+  };
+  setSearchForm: Dispatch<
+    SetStateAction<{
+      address: string;
+      keyword: string;
+      location: string;
+      radius: number;
+      minPrice: number;
+      maxPrice: number;
+    }>
+  >;
   handleApiLoaded: ({ map, maps }: { map: any; maps: any }) => void;
   handleGetInfos: () => Promise<void>;
 };
 const MapPresenter: React.FC<MapPresenterProps> = ({
-  defaultLatLng,
+  latLng,
+  setLatLng,
+  searchForm,
+  setSearchForm,
   handleApiLoaded,
   handleGetInfos,
 }) => {
   return (
     <>
-      <div style={{ height: '500px', width: '500px' }}>
+      <div style={{ height: '500px', width: '100%' }}>
         <GoogleMapReact
           bootstrapURLKeys={{ key: process.env.NEXT_PUBLIC_MAP_API_KEY || '' }}
-          defaultCenter={defaultLatLng}
+          defaultCenter={latLng}
           defaultZoom={16}
           onGoogleApiLoaded={handleApiLoaded}
+          onClick={setLatLng}
         />
       </div>
-      <MuiButton onClick={handleGetInfos}>ボタン</MuiButton>
+
+      <MuiButton onClick={handleGetInfos}>検索</MuiButton>
     </>
   );
 };

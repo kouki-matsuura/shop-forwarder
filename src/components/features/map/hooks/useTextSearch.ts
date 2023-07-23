@@ -1,18 +1,46 @@
-import { PlacesRequest } from '../map.types';
+import { useState } from 'react';
+import {
+  GeoCodeRequest,
+  PlacesRequest,
+  ReverseGeoCodeRequest,
+} from '../map.types';
 type UseTextSearchResponse = {
-  getInfos: (req: PlacesRequest) => Promise<any>;
+  getPlaces: (req: PlacesRequest) => any;
+  getLatLng: (req: GeoCodeRequest) => any;
+  getAddress: (req: ReverseGeoCodeRequest) => any;
 };
 export const useTextSearch = (): UseTextSearchResponse => {
-  const getInfos = async (req: PlacesRequest) => {
+  const getPlaces = async (req: PlacesRequest) => {
     const response = await fetch(
-      `/api/textSearch?query=${req.query}&language=${req.language}&location=${req.location}&radius=${req.radius}&key=${req.key}`,
+      `/api/textSearch?query=${req.query}&language=ja&location=${req.location}&radius=${req.radius}&minprice=${req.minprice}&maxprice=${req.maxprice}&key=${req.key}`,
     );
     const result = await response.json();
-    console.log(result);
+    console.log('RESULT:', result);
     return result;
   };
 
+  const getLatLng = async (req: GeoCodeRequest) => {
+    const response = await fetch(
+      `/api/geoCoder?address=${req.address}&key=${req.key}`,
+    );
+    const result = await response.json();
+    console.log('GEO:', result);
+    return result;
+  };
+
+  const getAddress = async (req: ReverseGeoCodeRequest) => {
+    const latlng = `${req.lat},${req.lng}`;
+    const response = await fetch(
+      `/api/reverseGeoCoder?latlng=${latlng}&key=${req.key}`,
+    );
+    const result = await response.json();
+    console.log('ADDRESS:', result.results[0]);
+    return result.results[0];
+  };
+
   return {
-    getInfos,
+    getPlaces,
+    getLatLng,
+    getAddress,
   };
 };

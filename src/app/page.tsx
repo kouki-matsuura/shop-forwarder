@@ -1,13 +1,10 @@
-import Header from '@/components/ui/Header';
-import styles from './page.module.css';
-import { MapContainer } from '@/components/features/map/container/mapContainer';
+import { TopContainer } from '@/components/features/top/container/TopContainer';
 
 export default function Home() {
   return (
     <>
-      <Header></Header>
-      <main className={styles.main}>
-        <MapContainer />
+      <main className="flex min-h-screen flex-col items-center justify-between p-24">
+        <TopContainer />
       </main>
     </>
   );

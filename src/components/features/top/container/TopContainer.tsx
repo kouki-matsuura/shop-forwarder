@@ -87,6 +87,7 @@ export const TopContainer = () => {
   }
   return (
     <>
+      <MapContainer latLng={latLng} setLatLng={setLatLng} />
       <SearchContainer />
     </>
   );

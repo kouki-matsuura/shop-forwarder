@@ -232,7 +232,7 @@ function AutoFormInput({
         {isRequired && <span className="text-destructive"> *</span>}
       </FormLabel>
       <FormControl>
-        <Input type="text" {...fieldProps} />
+        <Input type="text" {...fieldProps} required={false} />
       </FormControl>
       {fieldConfigItem.description && (
         <FormDescription>{fieldConfigItem.description}</FormDescription>

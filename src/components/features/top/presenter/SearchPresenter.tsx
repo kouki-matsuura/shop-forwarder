@@ -8,9 +8,12 @@ import * as z from 'zod';
 const formSchema = z.object({
   center: z
     .string({ required_error: '中心地点を入力してください' })
-    .describe('地点'),
+    .min(1, { message: '中心地点を入力してください' })
+    .describe('地点')
+    .default(''),
   radius: z.string({ required_error: '半径を入力してください' }).default('1'),
 });
+
 export const SearchPresenter = () => {
   return (
     <div className="max-w-lg mx-auto my-6">
@@ -20,6 +23,7 @@ export const SearchPresenter = () => {
         fieldConfig={{
           center: {
             inputProps: {
+              required: true,
               type: 'text',
               placeholder: '例）新宿駅',
             },
@@ -32,7 +36,7 @@ export const SearchPresenter = () => {
               fieldProps,
             }: AutoFormInputComponentProps) => (
               <FormItem className="flex flex-col space-y-2 w-80">
-                <FormLabel className="font-medium text-sm">半径</FormLabel>
+                <FormLabel className="font-medium text-sm">半径（m）</FormLabel>
                 <FormControl>
                   <input
                     type="range"

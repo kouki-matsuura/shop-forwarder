@@ -16,6 +16,7 @@ type MapPresenterProps = {
       lng: number;
     }>
   >;
+  handleReverseGeoCode: () => void;
 };
 
 const MapPresenter: React.FC<MapPresenterProps> = ({
@@ -23,6 +24,7 @@ const MapPresenter: React.FC<MapPresenterProps> = ({
   onLoad,
   onUnmount,
   setLatLng,
+  handleReverseGeoCode,
 }) => {
   console.log('center:', center);
   return (
@@ -38,6 +40,7 @@ const MapPresenter: React.FC<MapPresenterProps> = ({
             lat: e.latLng?.lat() || 0,
             lng: e.latLng?.lng() || 0,
           });
+          handleReverseGeoCode();
         }}
       >
         <MarkerF

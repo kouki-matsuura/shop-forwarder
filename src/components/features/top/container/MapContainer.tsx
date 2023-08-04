@@ -21,11 +21,13 @@ type MapContainerProps = {
       lng: number;
     }>
   >;
+  handleReverseGeoCode: () => void;
 };
 
 export const MapContainer: React.FC<MapContainerProps> = ({
   latLng,
   setLatLng,
+  handleReverseGeoCode,
 }) => {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_MAP_API_KEY || '',
@@ -52,6 +54,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     onLoad: onLoad,
     onUnmount: onUnmount,
     setLatLng: setLatLng,
+    handleReverseGeoCode: handleReverseGeoCode,
   };
   return <MapPresenter {...args} />;
 };

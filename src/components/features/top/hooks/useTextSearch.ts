@@ -5,7 +5,7 @@ type UseTextSearchResponse = {
   getPlaces: (req: PlacesRequest) => any;
 };
 export const useTextSearch = (): {
-  fetchPlaces: (req: PlacesRequest) => void;
+  fetchPlaces: (req: PlacesRequest) => Promise<any>;
   result: any;
   processing: boolean;
   error: any;
@@ -17,7 +17,7 @@ export const useTextSearch = (): {
   const fetchPlaces = async (req: PlacesRequest) => {
     setProcessing(true);
 
-    await fetch(
+    const result = await fetch(
       `/api/textSearch?query=${req.query}&language=ja&location=${req.location}&radius=${req.radius}&minprice=${req.minprice}&maxprice=${req.maxprice}&key=${req.key}`,
     )
       .then(async (response) => {
@@ -27,8 +27,10 @@ export const useTextSearch = (): {
         const result = await response.json();
         setError(undefined);
         setResult(result);
+        return result;
       })
       .finally(() => setProcessing(false));
+    return result;
   };
 
   return { fetchPlaces, result, processing, error };

@@ -33,8 +33,8 @@ export const TopContainer = () => {
   } = useTextSearch();
   const {
     fetchGeoCode,
-    result: geoCodeResult,
-    processing: fetchGeoCodeProcessing,
+    data: geoCodeData,
+    isLoading: geoCodeLoading,
     error: fetchGeoCodeError,
   } = useGeoCoder();
   const {
@@ -44,29 +44,41 @@ export const TopContainer = () => {
     error: fetchReverseGeoCodeError,
   } = useReverseGeoCoder();
 
-  // useEffect(() => {
-  //   fetchReverseGeoCode({
-  //     key: process.env.NEXT_PUBLIC_MAP_API_KEY || '',
-  //     lat: latLng.lat,
-  //     lng: latLng.lng,
-  //   });
-  //   setSearchForm({
-  //     ...searchForm,
-  //     address: reverseGeoCodeResult,
-  //   });
-  //   if (!fetchReverseGeoCodeProcessing)
-  //     console.log('reverseGeoCodeResult:', reverseGeoCodeResult);
-  // }, [latLng]);
-
-  const handleGetInfos = async () => {
-    const response = fetchPlaces({
+  const handleReverseGeoCode = () => {
+    fetchReverseGeoCode({
       key: process.env.NEXT_PUBLIC_MAP_API_KEY || '',
-      query: searchForm.keyword,
-      location: searchForm.location,
-      radius: searchForm.radius,
-      minprice: searchForm.minPrice,
-      maxprice: searchForm.maxPrice,
+      lat: latLng.lat,
+      lng: latLng.lng,
     });
+    setSearchForm({
+      ...searchForm,
+      address: reverseGeoCodeResult,
+    });
+  };
+
+  const handleGetInfos = async (form: any) => {
+    await fetchGeoCode({
+      key: process.env.NEXT_PUBLIC_MAP_API_KEY || '',
+      address: form.center,
+    });
+    const radius = RADIUS_MAP[form.radius as keyof typeof RADIUS_MAP];
+    setSearchForm({
+      address: form.center,
+      keyword: form.keyword,
+      location: geoCodeData,
+      radius: radius,
+      minPrice: 1,
+      maxPrice: 4,
+    });
+    const response = await fetchPlaces({
+      key: process.env.NEXT_PUBLIC_MAP_API_KEY || '',
+      query: 'ラーメン',
+      location: geoCodeData,
+      radius: radius,
+      minprice: 1,
+      maxprice: 3,
+    });
+    console.log('response:', response);
   };
 
   if (fetchPlaceError) {
@@ -79,16 +91,25 @@ export const TopContainer = () => {
   }
 
   // TODO: ここでローディングを表示する
-  if (
-    fetchPlaceProcessing ||
-    fetchGeoCodeProcessing ||
-    fetchReverseGeoCodeProcessing
-  ) {
+  if (fetchPlaceProcessing || geoCodeLoading || fetchReverseGeoCodeProcessing) {
   }
   return (
     <>
-      <MapContainer latLng={latLng} setLatLng={setLatLng} />
-      <SearchContainer />
+      <MapContainer
+        latLng={latLng}
+        setLatLng={setLatLng}
+        handleReverseGeoCode={handleReverseGeoCode}
+      />
+      <SearchContainer handleGetInfos={handleGetInfos} />
     </>
   );
 };
+
+const RADIUS_MAP = {
+  1: 300,
+  2: 500,
+  3: 1000,
+  4: 2000,
+  5: 3000,
+  6: 5000,
+} as const;

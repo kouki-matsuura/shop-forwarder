@@ -5,6 +5,11 @@ import AutoForm, {
 } from '@/components/ui/auto-form';
 import { FormControl, FormItem, FormLabel } from '@/components/ui/form';
 import * as z from 'zod';
+
+type SearchPresenterProps = {
+  handleGetInfos: (form: any) => void;
+};
+
 const formSchema = z.object({
   center: z
     .string({ required_error: '中心地点を入力してください' })
@@ -14,11 +19,13 @@ const formSchema = z.object({
   radius: z.string({ required_error: '半径を入力してください' }).default('1'),
 });
 
-export const SearchPresenter = () => {
+export const SearchPresenter: React.FC<SearchPresenterProps> = ({
+  handleGetInfos,
+}) => {
   return (
     <div className="max-w-lg mx-auto my-6">
       <AutoForm
-        onSubmit={(data) => console.log('aaa:', data)}
+        onSubmit={(data) => handleGetInfos(data)}
         formSchema={formSchema}
         fieldConfig={{
           center: {

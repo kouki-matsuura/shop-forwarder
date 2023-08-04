@@ -1,37 +1,39 @@
 import { useState } from 'react';
 import { PlacesRequest } from '../map.types';
-type UseTextSearchResponse = {
-  address: string;
-  getPlaces: (req: PlacesRequest) => any;
-};
+import { TEXT_SEARCH_KEY } from '@/common/reactQueryKeys';
+import { useSearchState } from '../actions';
+import { useQuery } from '@tanstack/react-query';
+
 export const useTextSearch = (): {
   fetchPlaces: (req: PlacesRequest) => Promise<any>;
-  result: any;
-  processing: boolean;
+  data: any;
+  isLoading: boolean;
   error: any;
 } => {
-  const [processing, setProcessing] = useState<boolean>(false);
-  const [result, setResult] = useState<any>();
-  const [error, setError] = useState<any>();
+  const { search } = useSearchState();
+
+  const textSearchKey = [TEXT_SEARCH_KEY, search];
+
+  const { isLoading, data, error } = useQuery(textSearchKey, () =>
+    fetchPlaces({
+      query: search.query,
+      location: search.location,
+      radius: search.radius,
+      minprice: search.minprice,
+      maxprice: search.maxprice,
+      key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
+    }),
+  );
 
   const fetchPlaces = async (req: PlacesRequest) => {
-    setProcessing(true);
-
     const result = await fetch(
       `/api/textSearch?query=${req.query}&language=ja&location=${req.location}&radius=${req.radius}&minprice=${req.minprice}&maxprice=${req.maxprice}&key=${req.key}`,
-    )
-      .then(async (response) => {
-        if (!response.ok) {
-          setError(response.statusText);
-        }
-        const result = await response.json();
-        setError(undefined);
-        setResult(result);
-        return result;
-      })
-      .finally(() => setProcessing(false));
+    ).then(async (response) => {
+      const result = await response.json();
+      return result;
+    });
     return result;
   };
 
-  return { fetchPlaces, result, processing, error };
+  return { fetchPlaces, data, isLoading, error };
 };

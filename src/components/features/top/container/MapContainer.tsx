@@ -9,6 +9,7 @@ import {
 
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import MapPresenter from '../presenter/MapPresenter';
+import { useSearchState } from '../actions';
 
 type MapContainerProps = {
   latLng: {

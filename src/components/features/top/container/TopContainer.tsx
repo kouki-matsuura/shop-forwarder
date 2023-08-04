@@ -5,6 +5,7 @@ import { useReverseGeoCoder } from '../hooks/useReverseGeoCoder';
 import { useTextSearch } from '../hooks/useTextSearch';
 import { MapContainer } from './MapContainer';
 import { SearchContainer } from './SearchContainer';
+import { useSearchState } from '../actions';
 
 export const TopContainer = () => {
   const [latLng, setLatLng] = useState<{
@@ -14,23 +15,16 @@ export const TopContainer = () => {
     lat: 35.6905,
     lng: 139.6995,
   });
-  const [searchForm, setSearchForm] = useState({
-    address: '',
-    keyword: '',
-    location: '',
-    radius: 100,
-    minPrice: 1,
-    maxPrice: 4,
-  });
 
-  const [infos, setInfos] = useState<any>();
+  const { search, setSearch } = useSearchState();
 
   const {
     fetchPlaces,
-    result: placeResult,
-    processing: fetchPlaceProcessing,
+    data: placesData,
+    isLoading: fetchPlaceProcessing,
     error: fetchPlaceError,
   } = useTextSearch();
+
   const {
     fetchGeoCode,
     data: geoCodeData,
@@ -50,8 +44,8 @@ export const TopContainer = () => {
       lat: latLng.lat,
       lng: latLng.lng,
     });
-    setSearchForm({
-      ...searchForm,
+    setSearch({
+      ...search,
       address: reverseGeoCodeResult,
     });
   };
@@ -62,14 +56,16 @@ export const TopContainer = () => {
       address: form.center,
     });
     const radius = RADIUS_MAP[form.radius as keyof typeof RADIUS_MAP];
-    setSearchForm({
+
+    setSearch({
+      query: form.query,
       address: form.center,
-      keyword: form.keyword,
       location: geoCodeData,
       radius: radius,
-      minPrice: 1,
-      maxPrice: 4,
+      minprice: 1,
+      maxprice: 4,
     });
+
     const response = await fetchPlaces({
       key: process.env.NEXT_PUBLIC_MAP_API_KEY || '',
       query: 'ラーメン',
@@ -92,6 +88,7 @@ export const TopContainer = () => {
 
   // TODO: ここでローディングを表示する
   if (fetchPlaceProcessing || geoCodeLoading || fetchReverseGeoCodeProcessing) {
+    return <>ローディング中...</>;
   }
   return (
     <>

@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { GeoCodeRequest, ReverseGeoCodeRequest } from '../map.types';
+import { useSearchState } from '../actions';
+import { REVERSE_GEO_CODE_KEY } from '@/common/reactQueryKeys';
+import { useQuery } from '@tanstack/react-query';
 
 export const useReverseGeoCoder = (): {
   fetchReverseGeoCode: (req: ReverseGeoCodeRequest) => void;
@@ -7,9 +10,15 @@ export const useReverseGeoCoder = (): {
   processing: boolean;
   error: any;
 } => {
-  const [processing, setProcessing] = useState<boolean>(false);
-  const [result, setResult] = useState<any>();
-  const [error, setError] = useState<any>();
+
+  const { search } = useSearchState();
+  const reverseGeoCodeKey = [REVERSE_GEO_CODE_KEY, search.location];
+  const { isLoading, data, error } = useQuery(reverseGeoCodeKey, () =>
+    fetchReverseGeoCode({
+      latlng: search.location,
+      key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
+    }),
+  );
 
   const fetchReverseGeoCode = async (req: ReverseGeoCodeRequest) => {
     setProcessing(true);

@@ -10,8 +10,7 @@ export const useGeoCoder = (): {
   isLoading: boolean;
   error: any;
 } => {
-  const { search, setSearch } = useSearchState();
-
+  const { search } = useSearchState();
   const geoCodeKey = [GEO_CODE_KEY, search.address];
   const { isLoading, data, error } = useQuery(geoCodeKey, () =>
     fetchGeoCode({
@@ -27,8 +26,6 @@ export const useGeoCoder = (): {
       const result = await response.json();
       return result;
     });
-
-    return result;
   };
 
   return { fetchGeoCode, data, isLoading, error };

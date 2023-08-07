@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const address = url.searchParams.get('address');
   const key = url.searchParams.get('key');

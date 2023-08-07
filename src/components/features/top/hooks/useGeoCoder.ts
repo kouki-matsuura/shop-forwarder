@@ -3,30 +3,23 @@ import { GeoCodeRequest } from '../map.types';
 import { GEO_CODE_KEY } from '@/common/reactQueryKeys';
 import { useSearchState } from '../actions';
 import { useQuery } from '@tanstack/react-query';
+import useSWR from 'swr';
 
 export const useGeoCoder = (): {
-  fetchGeoCode: (req: GeoCodeRequest) => Promise<any>;
   data: any;
   isLoading: boolean;
   error: any;
 } => {
   const { search } = useSearchState();
-  const geoCodeKey = [GEO_CODE_KEY, search.address];
-  const { isLoading, data, error } = useQuery(geoCodeKey, () =>
-    fetchGeoCode({
-      address: search.address,
-      key: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
-    }),
+  const fetchGeoCode = (url: string, address: string) =>
+    fetch(
+      `${url}?address=${address}&key=${process.env.NEXT_PUBLIC_MAP_API_KEY}`,
+    ).then((response) => response.json());
+
+  const { data, error, isLoading } = useSWR(
+    [`/api/geoCoder`, search.address],
+    ([url, address]) => fetchGeoCode(url, address),
   );
 
-  const fetchGeoCode = async (req: GeoCodeRequest) => {
-    const result = await fetch(
-      `/api/geoCoder?address=${req.address}&key=${req.key}`,
-    ).then(async (response) => {
-      const result = await response.json();
-      return result;
-    });
-  };
-
-  return { fetchGeoCode, data, isLoading, error };
+  return { data, isLoading, error };
 };

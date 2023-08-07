@@ -6,6 +6,7 @@ import { useTextSearch } from '../hooks/useTextSearch';
 import { MapContainer } from './MapContainer';
 import { SearchContainer } from './SearchContainer';
 import { useSearchState } from '../actions';
+import { useSWRConfig } from 'swr';
 
 export const TopContainer = () => {
   const [latLng, setLatLng] = useState<{
@@ -17,6 +18,7 @@ export const TopContainer = () => {
   });
 
   const { search, setSearch } = useSearchState();
+  const { mutate } = useSWRConfig();
 
   const {
     fetchPlaces,
@@ -26,37 +28,15 @@ export const TopContainer = () => {
   } = useTextSearch();
 
   const {
-    fetchGeoCode,
     data: geoCodeData,
     isLoading: geoCodeLoading,
     error: fetchGeoCodeError,
   } = useGeoCoder();
-  const {
-    fetchReverseGeoCode,
-    result: reverseGeoCodeResult,
-    processing: fetchReverseGeoCodeProcessing,
-    error: fetchReverseGeoCodeError,
-  } = useReverseGeoCoder();
 
-  const handleReverseGeoCode = () => {
-    fetchReverseGeoCode({
-      key: process.env.NEXT_PUBLIC_MAP_API_KEY || '',
-      lat: latLng.lat,
-      lng: latLng.lng,
-    });
-    setSearch({
-      ...search,
-      address: reverseGeoCodeResult,
-    });
-  };
+  const handleReverseGeoCode = () => {};
 
   const handleGetInfos = async (form: any) => {
-    await fetchGeoCode({
-      key: process.env.NEXT_PUBLIC_MAP_API_KEY || '',
-      address: form.center,
-    });
     const radius = RADIUS_MAP[form.radius as keyof typeof RADIUS_MAP];
-
     setSearch({
       query: form.query,
       address: form.center,
@@ -66,30 +46,30 @@ export const TopContainer = () => {
       maxprice: 4,
     });
 
-    const response = await fetchPlaces({
-      key: process.env.NEXT_PUBLIC_MAP_API_KEY || '',
-      query: 'ラーメン',
-      location: geoCodeData,
-      radius: radius,
-      minprice: 1,
-      maxprice: 3,
-    });
-    console.log('response:', response);
+    //mutate('/api/geoCoder');
+    // const response = await fetchPlaces({
+    //   key: process.env.NEXT_PUBLIC_MAP_API_KEY || '',
+    //   query: 'ラーメン',
+    //   location: geoCodeData,
+    //   radius: radius,
+    //   minprice: 1,
+    //   maxprice: 3,
+    // });
   };
 
   if (fetchPlaceError) {
     console.log('fetchPlaceError:', fetchPlaceError);
     return <></>;
   }
-  if (fetchGeoCodeError || fetchReverseGeoCodeError) {
+  if (fetchGeoCodeError) {
     console.log('fetchGeoCodeError:', fetchGeoCodeError);
-    console.log('fetchReverseGeoCodeError:', fetchReverseGeoCodeError);
   }
 
   // TODO: ここでローディングを表示する
-  if (fetchPlaceProcessing || geoCodeLoading || fetchReverseGeoCodeProcessing) {
+  if (fetchPlaceProcessing || geoCodeLoading) {
     return <>ローディング中...</>;
   }
+  console.log('gaocodeDAta:', geoCodeData);
   return (
     <>
       <MapContainer
